@@ -87,7 +87,9 @@ def ask_documents(
         }
 
     # one retriever per document set (fingerprinted cache keeps identity)
-    cache_key = "multi:" + "|".join(sorted(doc_ids))
+    # Single-doc asks reuse the exact key the processing-time pre-warm used,
+    # so the index is already hot (first question ~100ms, not seconds).
+    cache_key = doc_ids[0] if len(doc_ids) == 1 else "multi:" + "|".join(sorted(doc_ids))
     retriever = get_document_retriever(cache_key, chunks, settings.embedding_model)
     t_r = time.perf_counter()
     scored = retriever.search(question, top_k=top_k)

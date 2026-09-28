@@ -6,6 +6,7 @@ rows capture per-stage latency for observability.
 """
 import time
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
@@ -257,6 +258,39 @@ def process_document(db: Session, document: models.Document, file_bytes: bytes) 
         document.status_message = None
         document.pipeline_version = PIPELINE_VERSION
         db.commit()
+
+        # ---- Index pre-warm (first-question latency) ---------------------------
+        # Build + cache the retrieval index NOW so the user's first question is
+        # served in ~100ms instead of paying the lazy-build cost (observed 4-13s
+        # on first ask without this).
+        try:
+            from app.ml.retrieval.store import get_document_retriever
+
+            db.flush()
+            chunks_q = db.scalars(
+                select(models.Chunk).where(models.Chunk.document_id == document.id)
+                .order_by(models.Chunk.chunk_index)
+            ).all()
+            section_ids = {c.section_id for c in chunks_q if c.section_id}
+            titles: dict[str, str] = {}
+            if section_ids:
+                secs = db.scalars(
+                    select(models.Section).where(models.Section.id.in_(section_ids))
+                ).all()
+                titles = {s.id: s.title for s in secs}
+            warm_chunks = [
+                {
+                    "chunk_id": c.id, "document_id": c.document_id,
+                    "page_number": c.page_number, "section_id": c.section_id,
+                    "section_title": titles.get(c.section_id),
+                    "text": c.text, "is_table_chunk": c.is_table_chunk,
+                }
+                for c in chunks_q
+            ]
+            if warm_chunks:
+                get_document_retriever(document.id, warm_chunks, settings.embedding_model)
+        except Exception as e:  # pre-warm is best-effort; ask path still lazy-builds
+            log.warning("index pre-warm failed doc_id=%s err=%s", document.id, type(e).__name__)
 
         # ---- Persist full extracted text ------------------------------------
         all_text = "\n\n".join(
