@@ -1,0 +1,52 @@
+services:
+  db:
+    # PostgreSQL with pgvector for production-grade vector storage.
+    # The application currently ships a local TF-IDF embedder; the pgvector
+    # extension is provisioned so dense embeddings can be enabled without
+    # infrastructure changes (see docs/architecture.md → Future work).
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: medintel
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-medintel}
+      POSTGRES_DB: medintel
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medintel"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://medintel:${POSTGRES_PASSWORD:-medintel}@db:5432/medintel
+      SECRET_KEY: ${SECRET_KEY:?set SECRET_KEY in .env (generate with: python -c "import secrets; print(secrets.token_urlsafe(48))")}
+      APP_ENV: prod
+      STORAGE_ROOT: /data/storage
+      OCR_PROVIDER: auto
+      EMBEDDING_PROVIDER: local
+      LLM_PROVIDER: none
+    volumes:
+      - storage:/data/storage
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  storage:

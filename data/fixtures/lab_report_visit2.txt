@@ -1,0 +1,39 @@
+City General Hospital - Laboratory Report
+
+Patient Information
+Patient: J. Doe (fictional)
+DOB: 12 March 1985
+Referring Physician: Dr. Emily Carter
+MRN: 000-0000
+
+Specimen
+Type: Venous blood
+Collected: 2024-06-10 at 08:15
+Received: 2024-06-10
+
+Laboratory Results
+Hemoglobin: 11.8 g/dL [12.0-16.0] (L)
+Hematocrit: 35.4 % [36.0-46.0] (L)
+WBC: 7.2 x10^9/L [4.0-11.0]
+Platelets: 238 x10^9/L [150-400]
+Glucose: 132 mg/dL [70-100] (H)
+Creatinine: 1.0 mg/dL [0.6-1.2]
+HbA1c: 7.1 % [4.0-5.6] (H)
+LDL: 112 mg/dL [0-100] (H)
+HDL: 46 mg/dL [40-60]
+Triglycerides: 140 mg/dL [0-150]
+TSH: 2.4 mIU/L [0.4-4.0]
+
+Medications
+Metformin 1000 mg twice daily.
+Atorvastatin 20 mg at bedtime.
+Ferrous sulfate 325 mg once daily.
+
+Assessment and Plan
+Type 2 diabetes mellitus with worsening HbA1c. Metformin dose increased.
+Anemia workup initiated; iron studies ordered.
+Repeat labs in 3 months.
+
+Notes
+Patient reports fatigue. No chest pain. No shortness of breath.
+BP 134/86 mmHg. Temperature 36.9 C. Follow-up scheduled 2024-09-15.

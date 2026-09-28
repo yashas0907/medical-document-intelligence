@@ -1,0 +1,16 @@
+from app.db.models import (  # noqa: F401
+    AuditLog,
+    ChatMessage,
+    Chunk,
+    Citation,
+    ComparisonJob,
+    Conversation,
+    Document,
+    ExtractedEntity,
+    Measurement,
+    ModelRun,
+    Page,
+    Section,
+    TableExtraction,
+    User,
+)

@@ -1,0 +1,39 @@
+City General Hospital - Laboratory Report
+
+Patient Information
+Patient: J. Doe (fictional)
+DOB: 12 March 1985
+Referring Physician: Dr. Emily Carter
+MRN: 000-0000
+
+Specimen
+Type: Venous blood
+Collected: 2024-03-05 at 08:30
+Received: 2024-03-05
+
+Laboratory Results
+Hemoglobin: 13.2 g/dL [12.0-16.0]
+Hematocrit: 39.1 % [36.0-46.0]
+WBC: 6.7 x10^9/L [4.0-11.0]
+Platelets: 245 x10^9/L [150-400]
+Glucose: 108 mg/dL [70-100] (H)
+Creatinine: 0.9 mg/dL [0.6-1.2]
+HbA1c: 6.4 % [4.0-5.6] (H)
+LDL: 118 mg/dL [0-100] (H)
+HDL: 44 mg/dL [40-60]
+Triglycerides: 152 mg/dL [0-150] (H)
+TSH: 2.1 mIU/L [0.4-4.0]
+
+Medications
+Metformin 500 mg twice daily.
+Lisinopril 10 mg once daily.
+Atorvastatin 20 mg at bedtime.
+
+Assessment and Plan
+Type 2 diabetes mellitus with HbA1c above target. Continue current medications.
+Repeat HbA1c in 3 months. Patient counseled on diet and exercise.
+Monitor renal function annually.
+
+Notes
+Patient reports occasional headaches. No chest pain. No shortness of breath.
+BP 128/82 mmHg. Temperature 36.8 C. Follow-up scheduled 2024-06-10.
