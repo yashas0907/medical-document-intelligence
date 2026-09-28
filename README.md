@@ -1,5 +1,9 @@
 # MedIntel — AI Medical Document Intelligence Platform
 
+<!-- CI badge — uncomment after pushing and fill in your GitHub username:
+[![CI](https://github.com/YOUR_USERNAME/medical-document-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/medical-document-intelligence/actions/workflows/ci.yml)
+-->
+
 A production-style document-intelligence system for medical reports: ingestion,
 OCR, structure-aware extraction, hybrid retrieval RAG with **verifiable
 citations**, multi-mode summarization, deterministic document comparison,
@@ -10,6 +14,22 @@ provenance on every generated claim.
 > It does not provide medical advice, diagnosis, or treatment recommendations,
 > and it is not a medical device. It reports **what documents explicitly say**
 > — interpretation of medical information requires qualified professionals.
+
+## Screenshots
+
+| Landing | Dashboard |
+|---|---|
+| ![Landing](backend/tests/user_pov_shots/01_landing.png) | ![Dashboard](backend/tests/user_pov_shots/02_dashboard.png) |
+
+| Ask — grounded answer + citation popover | Structured summary (with honest "not found") |
+|---|---|
+| ![Ask](backend/tests/user_pov_shots/04_ask_citation.png) | ![Summary](backend/tests/user_pov_shots/05_summary_structured.png) |
+
+| Extracted measurements + flags | Document comparison |
+|---|---|
+| ![Extractions](backend/tests/user_pov_shots/06_extractions.png) | ![Compare](backend/tests/user_pov_shots/09_compare.png) |
+
+*(All screenshots captured by the automated Playwright user-journey test from synthetic fixture documents.)*
 
 ---
 
@@ -281,6 +301,9 @@ pytest                       # 73 tests: unit + integration + security (~40s, in
 pytest -m integration        # API-level only
 python tests/e2e_manual.py   # full-stack journey against a running server (20 checks)
 ```
+
+CI (GitHub Actions) runs the full suite + Alembic migration check + evaluation
+metrics on every push (`.github/workflows/ci.yml`), plus frontend lint/build.
 
 Coverage areas: parsing, cleaning, structure, extraction, normalization,
 chunking, retrieval, grounding, refusal, comparison, contradictions,

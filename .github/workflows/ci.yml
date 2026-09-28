@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  backend-tests:
+    name: Backend tests (unit + integration + security + e2e)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Tesseract OCR (real OCR-path tests)
+        run: sudo apt-get update && sudo apt-get install -y tesseract-ocr
+
+      - name: Install dependencies
+        run: |
+          pip install -e ".[dev]"
+          pip install bcrypt==4.1.3
+
+      - name: Apply Alembic migrations (verify schema is reproducible)
+        run: python -m alembic upgrade head
+        env:
+          DATABASE_URL: sqlite:///./data/ci-migrate.db
+
+      - name: Run test suite
+        run: pytest -p no:warnings -q
+        env:
+          # tests are offline/deterministic by design (conftest enforces too)
+          LLM_PROVIDER: none
+          SECRET_KEY: ci-only-secret
+
+      - name: Run evaluation suite (measured metrics must stay green)
+        run: python ../evals/run_eval.py
+        env:
+          LLM_PROVIDER: none
+          SECRET_KEY: ci-only-secret
+
+  frontend-build:
+    name: Frontend build + lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
