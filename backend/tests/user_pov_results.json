@@ -4,7 +4,7 @@
       "action": "landing headline visible",
       "passed": true,
       "detail": "Medical document intelligence, grounded in evidence",
-      "ms": 28.865599997516256
+      "ms": 20.83919999995487
     },
     {
       "action": "safety disclaimer present",
@@ -16,12 +16,12 @@
       "action": "login redirects to dashboard",
       "passed": true,
       "detail": "",
-      "ms": 786.834499995166
+      "ms": 739.6668000001227
     },
     {
       "action": "documents listed (>=7 after seed)",
       "passed": true,
-      "detail": "rows=11",
+      "detail": "rows=14",
       "ms": null
     },
     {
@@ -46,7 +46,7 @@
       "action": "answer includes Metformin",
       "passed": true,
       "detail": "",
-      "ms": 3926.2280000039027
+      "ms": 3454.2576999997436
     },
     {
       "action": "groundedness badge shown",
@@ -64,13 +64,13 @@
       "action": "refusal on unanswerable (no potassium in this doc)",
       "passed": true,
       "detail": "",
-      "ms": 1862.6306999940425
+      "ms": 1890.1092000000972
     },
     {
       "action": "structured summary with sections",
       "passed": true,
       "detail": "",
-      "ms": 84.61410000018077
+      "ms": 89.89539999993212
     },
     {
       "action": "absent field says 'Not found in the document.'",
@@ -82,7 +82,7 @@
       "action": "measurements table with H flags",
       "passed": true,
       "detail": "",
-      "ms": 84.08359999884851
+      "ms": 44.87380000000485
     },
     {
       "action": "tables tab renders table data",
@@ -106,7 +106,7 @@
       "action": "comparison table renders",
       "passed": true,
       "detail": "",
-      "ms": 96.35500000149477
+      "ms": 78.73710000012579
     },
     {
       "action": "hemoglobin value change shown",
@@ -124,7 +124,7 @@
       "action": "upload feedback (queued badge)",
       "passed": true,
       "detail": "",
-      "ms": 162.4599999995553
+      "ms": 93.08579999969879
     },
     {
       "action": "duplicate upload shows clear error",

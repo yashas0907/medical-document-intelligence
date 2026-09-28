@@ -15,6 +15,11 @@ def temp_env(tmp_path, monkeypatch):
     monkeypatch.setenv("STORAGE_ROOT", str(tmp_path / "storage"))
     monkeypatch.setenv("SECRET_KEY", "test-secret-key-for-pytest-only")
     monkeypatch.setenv("APP_ENV", "dev")
+    # Tests stay offline/deterministic: never call the configured LLM even if
+    # the developer's backend/.env enables one.
+    monkeypatch.setenv("LLM_PROVIDER", "none")
+    monkeypatch.setenv("LLM_MODEL", "")
+    monkeypatch.setenv("OCR_PROVIDER", "auto")
     # CI runs many auth calls from a single IP; keep generous test limits
     monkeypatch.setenv("RATE_LIMIT_AUTH_PER_MIN", "1000")
     monkeypatch.setenv("RATE_LIMIT_UPLOAD_PER_MIN", "1000")

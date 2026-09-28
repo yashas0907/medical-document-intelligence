@@ -107,6 +107,7 @@ class TestGrounding:
     def test_grounded_answer_with_citations(self):
         engine = ExtractiveGroundedEngine()
         ev = [_ev(1, "Metformin 500 mg twice daily. Lisinopril 10 mg once daily.")]
+        ev[0].section_title = "Medications"  # real flow always carries the section title
         ga = engine.answer("What medications are mentioned?", ev)
         assert not ga.insufficient_evidence
         assert "Metformin" in ga.answer_text

@@ -80,11 +80,15 @@ Full technical document: [docs/architecture.md](docs/architecture.md).
 4. **Grounded generation** — two layers:
    - **Extractive engine (default)**: selects and ranks source sentences by
      query relevance + support, each carrying citation refs. Deterministic,
-     testable, zero-cost, offline.
+     testable, zero-cost, offline, ~100ms.
    - **Optional LLM rewriter**: when `LLM_PROVIDER` is configured, the LLM
-     only rewrites *selected evidence sentences* under a strict contract;
-     output sentences without valid citation markers or source overlap are
-     **dropped by the validator**.
+     only rewrites *selected evidence sentences* into fluent prose under a
+     strict contract; output sentences without valid citation markers or
+     source overlap are **dropped by the validator**. Free-tier Gemini
+     (`gemini-2.5-flash` via its OpenAI-compatible endpoint) or local Ollama
+     both work — see `.env.example`. Answers take ~3–7s in LLM mode vs ~100ms
+     extractive; refusals never reach the LLM, so grounding is never
+     compromised by generation.
 5. **Refusal** — if retrieval support is insufficient, the API returns
    `insufficient_evidence: true` with an explicit "not found" message. It will
    not manufacture an answer.
@@ -171,6 +175,24 @@ npm run dev
 - Demo login (dev only, auto-created): `demo@medintel.local` / `demo-password`
 - Try it: upload two of the fixtures from `data/fixtures/`, then use Ask,
   Summaries, and Compare.
+- Seed all fixtures as the demo user: `python scripts/seed_demo.py`
+
+### Enable the LLM (optional, free tier)
+
+Without a key the system runs in deterministic extractive mode (fully
+functional, ~100ms answers). To get fluent prose answers, set in `backend/.env`:
+
+```bash
+LLM_PROVIDER=openai-compatible
+LLM_MODEL=gemini-2.5-flash
+LLM_API_BASE=https://generativelanguage.googleapis.com/v1beta/openai
+LLM_API_KEY=<your free key from https://aistudio.google.com>
+```
+
+Restart the backend, then run `python scripts/verify_llm.py` — it checks the
+LLM-grounded answer, citation validity, and that refusals still refuse. Any
+OpenAI-compatible endpoint works (local Ollama: `LLM_API_BASE=http://localhost:11434/v1`,
+`LLM_MODEL=llama3.2`). Tests and evals always run offline/deterministic regardless.
 
 ### OCR
 
@@ -227,7 +249,7 @@ See [.env.example](.env.example). Key ones:
 | `DATABASE_URL` | sqlite dev path | Postgres in Docker |
 | `SECRET_KEY` | dev-only | **generate a real one for prod** |
 | `EMBEDDING_PROVIDER` | `local` | `openai` needs `EMBEDDING_API_KEY`+`EMBEDDING_API_BASE` |
-| `LLM_PROVIDER` | `none` | `openai-compatible` (e.g. Ollama at `http://localhost:11434/v1`) — optional, system is fully functional without |
+| `LLM_PROVIDER` | `none` | `openai-compatible`: free-tier **Gemini** (`gemini-2.5-flash` + its OpenAI-compat endpoint — see `.env.example`) or local **Ollama** (`http://localhost:11434/v1`). Fully functional without |
 | `OCR_PROVIDER` | `auto` | auto-detects Tesseract |
 | `MAX_UPLOAD_MB` | 30 | enforced 413 |
 | `RATE_LIMIT_*_PER_MIN` | 10–20 | per-IP |

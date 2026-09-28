@@ -27,6 +27,10 @@ import os
 
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{(RESULTS_DIR / 'eval.db').as_posix()}")
 os.environ.setdefault("STORAGE_ROOT", str(RESULTS_DIR / "storage"))
+# Eval measures the DETERMINISTIC extractive path — no external LLM dependency,
+# so metrics are reproducible regardless of developer .env settings.
+os.environ["LLM_PROVIDER"] = "none"
+os.environ["LLM_MODEL"] = ""
 
 from app.core.config import get_settings  # noqa: E402
 
@@ -214,7 +218,8 @@ if d1 and d1["status"] == "completed":
         (d1["id"], "What medications are mentioned?", "metformin", True),
         (d1["id"], "What is the HbA1c value?", "6.4", True),
         (d1["id"], "What was the blood pressure?", "128/82", True),
-        (d1["id"], "What cholesterol level is reported?", None, False),  # no cholesterol in v1
+        # ratio is genuinely absent (LDL/HDL are recorded, a ratio is not) → must refuse
+        (d1["id"], "What is the patient's cholesterol ratio?", None, False),
     ]
 
 rag_metrics = []

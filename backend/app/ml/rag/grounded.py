@@ -32,6 +32,10 @@ STOP = {
     "this", "these", "those", "it", "its", "from", "about", "mention", "mentions",
     "mentioned", "state", "states", "stated", "list", "all", "any", "find",
     "found", "say", "says", "said", "tell", "told", "me", "give", "given",
+    # generic question filler — never content-bearing in medical queries
+    "patient", "value", "values", "level", "levels", "reading", "readings",
+    "reported", "report", "reports", "result", "results", "document", "documents",
+    "dose", "doses", "dosage", "dosages",
 }
 
 
@@ -101,42 +105,38 @@ class EvidenceValidator:
 
     @staticmethod
     def sufficiency(evidence: list[EvidencePiece], query: str) -> tuple[bool, str | None]:
+        """Evidence must actually contain what the question asks about.
+
+        - 1 content token (category question, e.g. "what medications..."):
+          that concept must appear in the evidence text or a section title.
+        - 2+ content tokens (specific question, e.g. "cholesterol ratio"):
+          MORE THAN HALF the question's content tokens must appear somewhere
+          in the evidence (tokens include abbreviation expansions, so
+          "blood pressure" matches a document that says "BP").
+        - 0 content tokens: fully generic query — retrieval decides.
+        """
         if not evidence:
             return False, "No passages were retrieved for this question."
         qtok = _content_tokens(query)
         if not qtok:
             return True, None
-        support = 0.0
+        all_ev_tokens: set[str] = set()
         for e in evidence:
-            etok = _content_tokens(e.text) | _content_tokens(e.section_title or "")
-            if etok:
-                support = max(support, len(qtok & etok) / max(1, min(len(qtok), 8)))
-        if support < 0.15:
-            # Category/list questions ("what medications...") legitimately retrieve
-            # passages whose *content* answers the category without repeating the
-            # category word. The retriever already discarded zero-relevance chunks,
-            # so only refuse when NO retrieved evidence has substance.
-            has_substance = any(len(e.text) > 20 for e in evidence)
-            if not has_substance:
-                return False, (
-                    "I could not find passages relevant to this question in the uploaded "
-                    "documents."
-                )
-            # Refusal only when the question is *specific* (2+ content tokens — a
-            # named entity, a value question, etc.) and none of its rare-ish tokens
-            # appear anywhere in the evidence. Single-token category questions
-            # ("what medications...") are answered by the retrieved list itself.
-            specific = [t for t in qtok if len(t) > 3]
-            if len(specific) >= 2:
-                all_ev_tokens: set[str] = set()
-                for e in evidence:
-                    all_ev_tokens |= _content_tokens(e.text) | _content_tokens(e.section_title or "")
-                if not any(t in all_ev_tokens for t in specific):
-                    return False, (
-                        "I could not find passages relevant to this question in the "
-                        "uploaded documents."
-                    )
-        return True, None
+            all_ev_tokens |= _content_tokens(e.text) | _content_tokens(e.section_title or "")
+        covered = qtok & all_ev_tokens
+        if len(qtok) == 1:
+            if covered:
+                return True, None
+            return False, (
+                "I could not find passages relevant to this question in the uploaded "
+                "documents."
+            )
+        if len(covered) * 2 > len(qtok):
+            return True, None
+        return False, (
+            "I could not find passages relevant to this question in the uploaded "
+            "documents."
+        )
 
     @staticmethod
     def sentence_support(sentence: str, evidence: list[EvidencePiece]) -> float:
@@ -219,7 +219,7 @@ class ExtractiveGroundedEngine:
         final: list[tuple[float, AnswerSentence, EvidencePiece]] = []
         for item in picked:
             cid = item[2].chunk_id
-            if per_chunk.get(cid, 0) >= 2:
+            if per_chunk.get(cid, 0) >= 4:
                 continue
             per_chunk[cid] = per_chunk.get(cid, 0) + 1
             final.append(item)
@@ -304,9 +304,11 @@ class LLMGroundedRewriter:
                     {"role": "user", "content": user_prompt},
                 ],
                 "temperature": 0.0,
-                "max_tokens": 400,
+                # Generous budget: reasoning models spend tokens on thinking
+                # before output; 400 truncated answers in testing.
+                "max_tokens": 2048,
             },
-            timeout=60,
+            timeout=90,
         )
         meta = {"provider": "openai-compatible", "model": self.model,
                 "prompt_version": PROMPT_VERSION, "pipeline_version": PIPELINE_VERSION}
