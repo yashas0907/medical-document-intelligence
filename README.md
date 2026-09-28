@@ -1,8 +1,6 @@
 # MedIntel — AI Medical Document Intelligence Platform
 
-<!-- CI badge — uncomment after pushing and fill in your GitHub username:
-[![CI](https://github.com/YOUR_USERNAME/medical-document-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/medical-document-intelligence/actions/workflows/ci.yml)
--->
+[![CI](https://github.com/yashas0907/medical-document-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/yashas0907/medical-document-intelligence/actions/workflows/ci.yml)
 
 A production-style document-intelligence system for medical reports: ingestion,
 OCR, structure-aware extraction, hybrid retrieval RAG with **verifiable
