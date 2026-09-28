@@ -42,3 +42,10 @@ evals/results/eval.db
 evals/results/storage/
 *.egg-info/
 
+server.log
+server-err.log
+svr-out.log
+svr-err.log
+backend/svr-*.log
+backend/server*.log
+tests/user_pov_shots/

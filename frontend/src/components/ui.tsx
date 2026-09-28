@@ -1,9 +1,16 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import { useAuth } from "@/components/auth-context";
 
 export function AppShell(
   { children, title, subtitle }: { children: ReactNode; title: string; subtitle?: string }
 ) {
+  const { email, logout } = useAuth();
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
@@ -25,6 +32,20 @@ export function AppShell(
             <NavLink href="/dashboard">Dashboard</NavLink>
             <NavLink href="/upload">Upload</NavLink>
             <NavLink href="/compare">Compare</NavLink>
+            {email && (
+              <span className="ml-3 hidden items-center gap-3 lg:flex">
+                <span className="max-w-40 truncate text-xs text-slate-400">{email}</span>
+                <button
+                  onClick={() => {
+                    logout();
+                    router.push("/login");
+                  }}
+                  className="rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:bg-slate-100"
+                >
+                  Sign out
+                </button>
+              </span>
+            )}
           </nav>
         </div>
       </header>

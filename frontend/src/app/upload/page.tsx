@@ -14,21 +14,26 @@ export default function UploadPage() {
   const { email, loading } = useAuth();
   const [dragging, setDragging] = useState(false);
   const [items, setItems] = useState<
-    { name: string; size: number; status: "uploading" | "queued" | "error"; error?: string }[]
+    { key: string; name: string; size: number; status: "uploading" | "queued" | "error"; error?: string }[]
   >([]);
   const [error, setError] = useState<string | null>(null);
 
   const upload = useCallback(async (files: FileList | File[]) => {
     setError(null);
-    const newItems = Array.from(files).map((f) => ({
+    const fileArr = Array.from(files);
+    // key each upload by a unique id so status updates can't land on wrong rows
+    const entries = fileArr.map((f) => ({
+      key: `${f.name}-${f.size}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       name: f.name,
       size: f.size,
       status: "uploading" as const,
     }));
-    setItems((prev) => [...newItems, ...prev]);
-    for (let i = 0; i < files.length; i++) {
-      const f = files[i];
-      const idx = items.length + i;
+    setItems((prev) => [...entries, ...prev]);
+    for (let i = 0; i < fileArr.length; i++) {
+      const f = fileArr[i];
+      const key = entries[i].key;
+      const setItem = (patch: { status: "queued" | "error"; error?: string }) =>
+        setItems((prev) => prev.map((it) => (it.key === key ? { ...it, ...patch } : it)));
       try {
         if (f.size > MAX_MB * 1024 * 1024) throw new Error(`File exceeds ${MAX_MB} MB limit`);
         const ext = "." + (f.name.split(".").pop() || "").toLowerCase();
@@ -36,14 +41,14 @@ export default function UploadPage() {
           throw new Error(`File type "${ext}" is not allowed (PDF, DOCX, TXT only)`);
         }
         await api.documents.upload(f);
-        setItems((prev) => prev.map((it, j) => (j === idx ? { ...it, status: "queued" } : it)));
+        setItem({ status: "queued" });
       } catch (err) {
         const msg =
           err instanceof ApiError ? err.message : err instanceof Error ? err.message : "Upload failed";
-        setItems((prev) => prev.map((it, j) => (j === idx ? { ...it, status: "error", error: msg } : it)));
+        setItem({ status: "error", error: msg });
       }
     }
-  }, [items.length]);
+  }, []);
 
   useEffect(() => {
     // prevent browser default for drag events on window
@@ -104,7 +109,7 @@ export default function UploadPage() {
           />
         </label>
         <p className="mt-4 text-xs text-slate-400">
-          Max {MAX_MB} MB per file · Your documents are never shared with other accounts
+          Max {MAX_MB} MB per file Â· Your documents are never shared with other accounts
         </p>
       </div>
 
@@ -112,8 +117,8 @@ export default function UploadPage() {
 
       {items.length > 0 && (
         <div className="mt-6 space-y-2">
-          {items.map((it, i) => (
-            <Card key={i} className="flex items-center justify-between px-4 py-3">
+          {items.map((it) => (
+            <Card key={it.key} className="flex items-center justify-between px-4 py-3">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-slate-900">{it.name}</p>
                 <p className="text-xs text-slate-400">{formatBytes(it.size)}</p>
@@ -121,7 +126,7 @@ export default function UploadPage() {
               {it.status === "uploading" && (
                 <span className="flex items-center gap-2 text-xs text-slate-500">
                   <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-slate-300 border-t-teal-600" />
-                  Uploading…
+                  Uploadingâ€¦
                 </span>
               )}
               {it.status === "queued" && (

@@ -1,9 +1,21 @@
-"""Application configuration via environment variables (12-factor)."""
-from functools import lru_cache
-from typing import Literal
+"""Application configuration via environment variables (12-factor).
 
-from pydantic import field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+Also caps BLAS/OpenMP thread pools BEFORE numpy/scikit-learn load: default
+per-core OpenBLAS threading multiplies memory usage and can crash the process
+on many-core machines during TF-IDF work. Single-threaded BLAS is also faster
+for our small per-document matrices.
+"""
+import os
+
+for _var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+             "NUMEXPR_NUM_THREADS"):
+    os.environ.setdefault(_var, "1")
+
+from functools import lru_cache  # noqa: E402
+from typing import Literal, Optional  # noqa: E402
+
+from pydantic import field_validator  # noqa: E402
+from pydantic_settings import BaseSettings, SettingsConfigDict  # noqa: E402
 
 MB = 1024 * 1024
 

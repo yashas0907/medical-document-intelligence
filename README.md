@@ -15,8 +15,8 @@ provenance on every generated claim.
 
 ## Why this exists
 
-Most "chat with PDF" demos (including the reference projects studied for this
-work) share three flaws:
+Typical "chat with PDF" prototypes share three flaws that this project was
+designed to eliminate from the ground up:
 
 1. **No provenance** — answers have no verifiable link to the exact page and
    passage they came from.
@@ -25,25 +25,13 @@ work) share three flaws:
 3. **No structure** — a medical report's tables, lab values, and sections are
    flattened into an undifferentiated text blob.
 
-MedIntel is built around fixing exactly those three flaws:
+MedIntel fixes all three structurally:
 
 | Flaw | MedIntel's answer |
 |---|---|
 | No provenance | Every answer sentence carries citation refs (`[1]`, `[2]`…) that resolve to **stored chunk + page + quote** in the database. Fake citations are structurally impossible — citations reference foreign keys, not strings. |
 | No refusal | The evidence validator refuses to answer when retrieval support is insufficient, and the extractive engine only composes answers **from source sentences**. |
 | No structure | Dedicated detectors for sections, tables (rows preserved), lab measurements (value/unit/range/flag), medications, dosages, dates — each with page-level provenance. |
-
-### Reference research
-
-The [KalyanM45/AI-Project-Gallery](https://github.com/KalyanM45/AI-Project-Gallery)
-repository (an index of 33 projects) was inspected as an idea reference. The
-closest projects are **DocGenius** (Streamlit + LangChain + FAISS + OpenAI
-embeddings PDF chat) and **Medical Assistant** (Flask + Gemini general medical
-query generator). MedIntel differs substantially: those are single-file,
-unstructured, ungrounded prototypes that require paid API keys; MedIntel is a
-multi-service system with OCR, structure extraction, hybrid retrieval,
-deterministic comparison, contradiction detection, evaluation, auth, async
-jobs, and a typed API. No code, datasets, or wording was copied.
 
 ---
 

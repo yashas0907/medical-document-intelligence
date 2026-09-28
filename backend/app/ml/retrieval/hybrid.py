@@ -88,18 +88,19 @@ class HybridRetriever:
         from app.ml.retrieval.query_expand import expand_query
 
         expanded = expand_query(query)
-        # Vector leg
+        # Vector leg — sparse-safe cosine (no full corpus densification:
+        # densifying large corpora exhausts memory; sparse matvec is O(nnz))
         qv = self._embedder.embed_query(expanded)
         corpus = self._embedder.corpus_matrix()
         import numpy as np
+        from scipy import sparse as sp
 
-        q = np.asarray(qv).reshape(1, -1)
-        # cosine via normalized dot
-        corpus_arr = corpus.toarray() if hasattr(corpus, "toarray") else np.asarray(corpus)
-        corpus_norm = np.clip(np.linalg.norm(corpus_arr, axis=1), 1e-12, None)
+        q = np.asarray(qv).ravel()
+        corpus_norm = sp.linalg.norm(corpus, axis=1) if sp.issparse(corpus) else np.linalg.norm(corpus, axis=1)
+        corpus_norm = np.clip(corpus_norm, 1e-12, None)
         q_norm = max(float(np.linalg.norm(q)), 1e-12)
-        sims = corpus_arr @ q.ravel() / (corpus_norm * q_norm)
-        vec_scores = np.clip(sims, 0.0, 1.0)
+        sims = (corpus @ q) / (corpus_norm * q_norm)
+        vec_scores = np.clip(np.asarray(sims).ravel(), 0.0, 1.0)
 
         # Lexical leg â€” exact-term boost: query terms present verbatim matter
         tokens = self._tokenize(expanded)

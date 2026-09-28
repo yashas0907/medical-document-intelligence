@@ -1,7 +1,7 @@
 """Seed demo data: create demo user and ingest all fixtures as that user.
 
 Requires the backend app to be importable and a running DB (defaults ok).
-Run from repo root: python scripts/seed_demo.py
+Run from repo root OR backend dir: python scripts/seed_demo.py
 """
 import sys
 from pathlib import Path
@@ -11,7 +11,10 @@ sys.path.insert(0, str(ROOT / "backend"))
 
 import os  # noqa: E402
 
-os.environ.setdefault("DATABASE_URL", "sqlite:///./backend/data/app.db")
+# Absolute DB path — CWD-independent (matches the backend server default)
+os.environ.setdefault(
+    "DATABASE_URL", f"sqlite:///{(ROOT / 'backend' / 'data' / 'app.db').as_posix()}"
+)
 
 from app.core.config import get_settings  # noqa: E402
 

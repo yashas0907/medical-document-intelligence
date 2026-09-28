@@ -1,0 +1,145 @@
+{
+  "results": [
+    {
+      "action": "landing headline visible",
+      "passed": true,
+      "detail": "Medical document intelligence, grounded in evidence",
+      "ms": 28.865599997516256
+    },
+    {
+      "action": "safety disclaimer present",
+      "passed": true,
+      "detail": "",
+      "ms": null
+    },
+    {
+      "action": "login redirects to dashboard",
+      "passed": true,
+      "detail": "",
+      "ms": 786.834499995166
+    },
+    {
+      "action": "documents listed (>=7 after seed)",
+      "passed": true,
+      "detail": "rows=11",
+      "ms": null
+    },
+    {
+      "action": "stats cards visible",
+      "passed": true,
+      "detail": "",
+      "ms": null
+    },
+    {
+      "action": "all docs show completed",
+      "passed": true,
+      "detail": "",
+      "ms": null
+    },
+    {
+      "action": "overview renders (contradiction banner if applicable)",
+      "passed": true,
+      "detail": "banner=no (internally consistent doc)",
+      "ms": null
+    },
+    {
+      "action": "answer includes Metformin",
+      "passed": true,
+      "detail": "",
+      "ms": 3926.2280000039027
+    },
+    {
+      "action": "groundedness badge shown",
+      "passed": true,
+      "detail": "",
+      "ms": null
+    },
+    {
+      "action": "citation popover opens",
+      "passed": true,
+      "detail": "click [1] -> source page/quote",
+      "ms": null
+    },
+    {
+      "action": "refusal on unanswerable (no potassium in this doc)",
+      "passed": true,
+      "detail": "",
+      "ms": 1862.6306999940425
+    },
+    {
+      "action": "structured summary with sections",
+      "passed": true,
+      "detail": "",
+      "ms": 84.61410000018077
+    },
+    {
+      "action": "absent field says 'Not found in the document.'",
+      "passed": true,
+      "detail": "",
+      "ms": null
+    },
+    {
+      "action": "measurements table with H flags",
+      "passed": true,
+      "detail": "",
+      "ms": 84.08359999884851
+    },
+    {
+      "action": "tables tab renders table data",
+      "passed": true,
+      "detail": "tables=1",
+      "ms": null
+    },
+    {
+      "action": "OCR badge with confidence",
+      "passed": true,
+      "detail": "SCANNED LAB REPORT Glucose: 99 mg/dL [70-100] Crea",
+      "ms": null
+    },
+    {
+      "action": "timeline events render",
+      "passed": true,
+      "detail": "dated items=4",
+      "ms": null
+    },
+    {
+      "action": "comparison table renders",
+      "passed": true,
+      "detail": "",
+      "ms": 96.35500000149477
+    },
+    {
+      "action": "hemoglobin value change shown",
+      "passed": true,
+      "detail": "",
+      "ms": null
+    },
+    {
+      "action": "medication add/remove diff visible via filters",
+      "passed": true,
+      "detail": "",
+      "ms": null
+    },
+    {
+      "action": "upload feedback (queued badge)",
+      "passed": true,
+      "detail": "",
+      "ms": 162.4599999995553
+    },
+    {
+      "action": "duplicate upload shows clear error",
+      "passed": true,
+      "detail": "",
+      "ms": null
+    },
+    {
+      "action": "sign out returns to login",
+      "passed": true,
+      "detail": "",
+      "ms": null
+    }
+  ],
+  "timings": [],
+  "passed": 23,
+  "failed": 0
+}

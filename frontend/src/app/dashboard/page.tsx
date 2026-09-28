@@ -8,7 +8,7 @@ import { AppShell, Card, EmptyState, ErrorBox, Spinner } from "@/components/ui";
 import { formatBytes, formatDate, STATUS_STYLES } from "@/lib/format";
 
 export default function DashboardPage() {
-  const { email, loading: authLoading, logout } = useAuth();
+  const { email, loading: authLoading } = useAuth();
   const [docs, setDocs] = useState<DocumentOut[]>([]);
   const [stats, setStats] = useState<StatsOut | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,12 +68,6 @@ export default function DashboardPage() {
       title="Dashboard"
       subtitle={`Signed in as ${email}`}
     >
-      <div className="mb-2 flex justify-end">
-        <button onClick={logout} className="text-xs font-medium text-slate-400 hover:text-slate-600">
-          Sign out
-        </button>
-      </div>
-
       {error && <div className="mb-4"><ErrorBox message={error} /></div>}
 
       {stats && (
