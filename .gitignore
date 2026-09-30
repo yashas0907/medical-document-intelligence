@@ -49,3 +49,5 @@ svr-err.log
 backend/svr-*.log
 backend/server*.log
 tests/user_pov_shots/
+
+docs/screenshots/user_pov_results.json

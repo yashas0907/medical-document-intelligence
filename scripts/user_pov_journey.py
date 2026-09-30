@@ -1,8 +1,16 @@
-"""User-POV browser test with Playwright: full user journey through the real UI.
+"""Browser-level user-journey verification (NOT part of the pytest suite).
 
-Measures per-action response times, captures screenshots, and validates every
-feature from the user's perspective (what they see, not what the API returns).
-Outputs: user_pov_results.json + screenshots/ directory.
+Drives a real Chromium through the full product as a user would: sign in,
+dashboard, document viewer (ask + citations, summaries, extractions, OCR
+pages, timeline), compare, upload, sign-out. Measures per-action response
+times and captures screenshots used in the README.
+
+Requirements (not needed for pytest/CI):
+    pip install playwright && playwright install chromium
+    backend running on :8000 AND frontend on :3000
+
+Run:  python scripts/user_pov_journey.py
+Outputs: docs/screenshots/*.png + docs/screenshots/user_pov_results.json
 """
 import json
 import sys
@@ -15,7 +23,7 @@ from playwright.sync_api import sync_playwright
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 BASE = "http://localhost:3000"
-SHOTS = Path(__file__).parent / "user_pov_shots"
+SHOTS = Path(__file__).resolve().parents[1] / "docs" / "screenshots"
 SHOTS.mkdir(exist_ok=True)
 
 results = []
@@ -276,7 +284,7 @@ def main():
     avg = {t["action"]: t["ms"] for t in timings}
     print(json.dumps(avg, indent=2))
 
-    Path(__file__).with_name("user_pov_results.json").write_text(
+    (SHOTS / "user_pov_results.json").write_text(
         json.dumps({"results": results, "timings": timings,
                     "passed": passed, "failed": failed}, indent=2)
     )
