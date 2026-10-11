@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     demo_user_email: str = "demo@medintel.local"
     demo_user_password: str = "demo-password"
 
+    # CORS — comma-separated list of allowed frontend origins
+    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+
     # Uploads
     max_upload_mb: int = 30
     storage_root: str = "./storage"
@@ -85,6 +88,10 @@ class Settings(BaseSettings):
     @property
     def allowed_ext_list(self) -> set[str]:
         return {e.strip().lower() for e in self.allowed_extensions.split(",") if e.strip()}
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
     @property
     def is_prod(self) -> bool:

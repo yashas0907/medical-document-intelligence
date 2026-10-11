@@ -13,6 +13,7 @@ Run:  python scripts/user_pov_journey.py
 Outputs: docs/screenshots/*.png + docs/screenshots/user_pov_results.json
 """
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -22,7 +23,9 @@ from playwright.sync_api import sync_playwright
 # Windows console-safe output
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-BASE = "http://localhost:3000"
+# Target any environment: local default, or the deployed app
+#   e.g.  $env:APP_URL="https://medintel.vercel.app"; python scripts/user_pov_journey.py
+BASE = os.environ.get("APP_URL", "http://localhost:3000")
 SHOTS = Path(__file__).resolve().parents[1] / "docs" / "screenshots"
 SHOTS.mkdir(exist_ok=True)
 

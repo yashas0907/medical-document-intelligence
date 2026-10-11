@@ -19,7 +19,9 @@ services:
     restart: unless-stopped
 
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     environment:
       DATABASE_URL: postgresql+psycopg://medintel:${POSTGRES_PASSWORD:-medintel}@db:5432/medintel
       SECRET_KEY: ${SECRET_KEY:?set SECRET_KEY in .env (generate with: python -c "import secrets; print(secrets.token_urlsafe(48))")}
@@ -28,6 +30,7 @@ services:
       OCR_PROVIDER: auto
       EMBEDDING_PROVIDER: local
       LLM_PROVIDER: none
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
     volumes:
       - storage:/data/storage
     ports:
