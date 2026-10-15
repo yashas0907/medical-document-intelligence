@@ -1,4 +1,4 @@
-"""One-command cloud deployment for MedIntel (free tiers, API-driven).
+r"""One-command cloud deployment for MedIntel (free tiers, API-driven).
 
 Orchestrates the full live-app pipeline:
   1. Neon      -> create/reuse free PostgreSQL project, print connection string
